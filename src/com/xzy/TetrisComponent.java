@@ -16,11 +16,11 @@ public class TetrisComponent extends JComponent implements KeyListener{
 	int currentShape;
 	int posx,posy;
 
+	
 	public TetrisComponent(){
 
-		posx = 3;
-		posy = 0;
 		data = new boolean[Constants.HIGTH][Constants.GAME_WIDTH];
+		initData();
 		setBounds(new Rectangle(2, 2, Constants.GAME_WIDTH_PIX, Constants.HIGTH_PIX));
 		addKeyListener(this);
 	}
@@ -52,7 +52,7 @@ public class TetrisComponent extends JComponent implements KeyListener{
 		super.paintComponent(g);
         initUI(g);
 	}
-	
+
 
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -90,37 +90,64 @@ public class TetrisComponent extends JComponent implements KeyListener{
 		
 	}
 	
+	public void initData(){
+		posx = 3;
+		posy = 0;
+		currentShape = Constants.getRadomShapeType();
+		for (int i = 0; i < Constants.HIGTH; i++)
+			for (int j = 0; j < Constants.GAME_WIDTH; j++) {
+				data[i][j] = false;
+			}
+		refreshdata();
+	}
+	
 	public void refreshdata(){
 		boolean[][] shapedata = Constants.getShape(currentShape);
 		for (int m = 0; m < 4; m++)
 			for (int n = 0; n < 4; n++) {
 				if (shapedata[m][n]) {
-	                data[posx + m][posy + n] = shapedata[m][n];
+	                data[posy + m][posx + n] = shapedata[m][n];
 				}
 			}
 	}
 	
-
-    
 	private boolean canTurn(){
 //		if(shapeType == Constants.)
-		boolean[][] shapedata = Constants.getShape(currentShape);
+		int turnShape = Constants.getTurn(currentShape);
+		boolean[][] turndata = Constants.getShape(turnShape);
+		for(int i=0;i<4;i++)
+		for(int j=0;j<4;j++){
+			
+			if(turndata[j][i] && data[posy+j][posx+i]) return false;
+		}		
 		
 		return false;
 	}
 	
 	private boolean canLeft(){
-		return false;
+		boolean[][] shapedata = Constants.getShape(currentShape);
+		int currentShapeCol = Constants.getShapeLeftNotNullCol(currentShape);
+		
+		for(int j=0;j<4;j++){
+			if(shapedata[j][currentShapeCol] || data[posy+j][posx+currentShapeCol-1]) return false;
+		}
+		return true;
 	}
 	private boolean canRight(){
-		return false;
+		boolean[][] shapedata = Constants.getShape(currentShape);
+		int currentShapeCol = Constants.getShapeRightNotNullCol(currentShape);
+		
+		for(int j=0;j<4;j++){
+			if(shapedata[j][currentShapeCol] || data[posy+j][posx+currentShapeCol+1]) return false;
+		}
+		return true;
 	}
 	private boolean canDown(){
 		return false;
 	}
 	
 	private void doTurn(){
-		
+		currentShape = Constants.getTurn(currentShape);
 	}
 	
 	private void doLeft(){
@@ -132,6 +159,7 @@ public class TetrisComponent extends JComponent implements KeyListener{
 	private void doDown(){
 		posy++;
 	}
-
+    
+	
 	
 }

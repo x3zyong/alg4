@@ -1,8 +1,12 @@
 package com.xzy;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,12 +29,12 @@ public class MainFrame {
 		JPanel helpPanel = new JPanel();
 		JPanel scopePanel = new JPanel();
 		
-		
+		TetrisComponent tetrisComponent = new TetrisComponent();
 		initHelpPanel(helpPanel);
-		initScopePanel(scopePanel);
+		initScopePanel(scopePanel, tetrisComponent);
 		
 		mainFrame.getContentPane().add(helpPanel,BorderLayout.WEST);
-		mainFrame.getContentPane().add(new TetrisComponent(),BorderLayout.CENTER);
+		mainFrame.getContentPane().add(tetrisComponent,BorderLayout.CENTER);
 		mainFrame.getContentPane().add(scopePanel,BorderLayout.EAST);
 
 		mainFrame.setVisible(true);
@@ -49,8 +53,23 @@ public class MainFrame {
 		panel.add(new JLabel("turn !"));
 	}
 
-	private static void initScopePanel(JPanel panel){
+	private static void initScopePanel(JPanel panel,TetrisComponent tetrisComponent){
 		panel.setBounds(new Rectangle((Constants.HELP_WIDTH_PIX + Constants.GAME_WIDTH_PIX) + 2,  2, Constants.SCOPE_WIDTH_PIX,Constants.HIGTH_PIX));
+		panel.setLayout(new GridLayout(3, 1));
 		panel.add(new JLabel("scope"));
+		panel.add(new JLabel("acture scope"));
+		JButton startButton = new JButton("start");
+		panel.add(startButton);
+		
+		startButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				tetrisComponent.initData();
+				tetrisComponent.repaint();
+				
+			}});
+		
 	}	
 }
