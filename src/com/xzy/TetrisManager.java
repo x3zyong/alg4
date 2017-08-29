@@ -4,7 +4,6 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 public class TetrisManager implements GameListener{
-	private Thread gameThread;
 	private int score;
 	private boolean isRunning;
 	private static TetrisComponent tetrisComponent;
@@ -21,6 +20,7 @@ public class TetrisManager implements GameListener{
 		return tetrisManager;
 	}
 	private TetrisManager(){
+		initGameThread();
 	}
 	public TetrisComponent getTetrisComponent(){
 		return tetrisComponent;
@@ -29,22 +29,24 @@ public class TetrisManager implements GameListener{
 		this.scoreLabel = scoreLabel;
 	}
 	private void initGameThread(){
-		gameThread = new Thread(){
+		new Thread(){
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					while(isRunning){
+					while(true){
 						Thread.sleep(400);
-						if(!tetrisComponent.doDown()){
-							if(!tetrisComponent.nextShape()) isRunning=false;
-						}
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								tetrisComponent.repaint();
+						if(isRunning){
+							if(!tetrisComponent.doDown()){
+								if(!tetrisComponent.nextShape()) isRunning=false;
 							}
-						});
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									tetrisComponent.repaint();
+								}
+							});
+						}
 					}
 					
 				} catch (InterruptedException e) {
@@ -52,19 +54,19 @@ public class TetrisManager implements GameListener{
 					e.printStackTrace();
 				}
 				
-			}};
+			}}.start();
 	}
 	
 	public void startGame(){
-		isRunning = true;
-		initGameThread();
-		gameThread.start();
+
 		tetrisComponent.initData();
 		SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 tetrisComponent.repaint();
             }
         });
+		
+		isRunning = true;
 	}
 
 	public void stopGame(){

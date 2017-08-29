@@ -31,7 +31,7 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 	
 	public void initData() {
 		posx = 3;
-		posy = 0;
+		posy = -2;
 		currentShape = Constants.getRadomShapeType();
 		oldShape = currentShape;
 		
@@ -121,7 +121,7 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 	
 	public boolean nextShape(){
 		posx = 3;
-		posy = -3;
+		posy = -2;
 		
 		currentShape = Constants.getRadomShapeType();	
 		boolean[][] currentshapedata = Constants.getShape(currentShape);
@@ -238,6 +238,8 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 			doTurn();
 			break;
 		case KeyEvent.VK_DOWN:
+			doDown();
+			doDown();
 			doDown();
 
 			break;

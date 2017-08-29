@@ -70,9 +70,7 @@ public class MainFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				TetrisManager.getInstance().startGame();
-
 			}});
 	}	
 }
