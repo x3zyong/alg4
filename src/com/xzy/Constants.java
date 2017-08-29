@@ -19,10 +19,9 @@ public class Constants {
 	public final static int HIGTH_PIX = HIGTH * UNIT_PIX;
 	
 	public final static int MAIN_WIDTH_PIX = (HELP_WIDTH+GAME_WIDTH+SCOPE_WIDTH) * UNIT_PIX;
-	
-
 
 	//
+	public final static int SHAPETYPE_INVALID = -1;
 	public final static int SHAPETYPE_SQUARE_0 = 0;
 	public final static int SHAPETYPE_RECT_0 = 1;
 	public final static int SHAPETYPE_RECT_1 = 2;
@@ -34,7 +33,14 @@ public class Constants {
 	public final static int SHAPETYPE_TRIANGLE_1 = 8;
 	public final static int SHAPETYPE_TRIANGLE_2 = 9;
 	public final static int SHAPETYPE_TRIANGLE_3 = 10;
-
+	public final static int SHAPETYPE_LEFT_L_0=11;
+	public final static int SHAPETYPE_LEFT_L_1=12;
+	public final static int SHAPETYPE_LEFT_L_2=13;
+	public final static int SHAPETYPE_LEFT_L_3=14;
+	public final static int SHAPETYPE_RIGHT_L_0=15;
+	public final static int SHAPETYPE_RIGHT_L_1=16;
+	public final static int SHAPETYPE_RIGHT_L_2=17;
+	public final static int SHAPETYPE_RIGHT_L_3=18;
     //
 	public final static boolean[][] SQUARE_0={
 			{false,false,false,false},
@@ -108,8 +114,60 @@ public class Constants {
 			{false,true,false,false},
 			{false,false,false,false},	
 	};	
+
+	public final static boolean[][] LEFT_L_0={
+			{false,true,false,false},
+			{false,true,false,false},
+			{true,true,false,false},
+			{false,false,false,false},	
+	};	
 	
-    
+	public final static boolean[][] LEFT_L_1={
+			{true,false,false,false},
+			{true,true,true,false},
+			{false,false,false,false},
+			{false,false,false,false},	
+	};
+	
+	public final static boolean[][] LEFT_L_2={
+			{true,true,false,false},
+			{true,false,false,false},
+			{true,false,false,false},
+			{false,false,false,false},	
+	};
+	public final static boolean[][] LEFT_L_3={
+			{true,true,true,false},
+			{false,false,true,false},
+			{false,false,false,false},
+			{false,false,false,false},	
+	};
+ 
+	public final static boolean[][] RIGHT_L_0={
+			{true,false,false,false},
+			{true,false,false,false},
+			{true,true,false,false},
+			{false,false,false,false},	
+	};	
+	
+	public final static boolean[][] RIGHT_L_1={
+			{true,true,true,false},
+			{true,false,false,false},
+			{false,false,false,false},
+			{false,false,false,false},	
+	};
+	
+	public final static boolean[][] RIGHT_L_2={
+			{true,true,false,false},
+			{false,true,false,false},
+			{false,true,false,false},
+			{false,false,false,false},	
+	};
+	public final static boolean[][] RIGHT_L_3={
+			{false,false,true,false},
+			{true,true,true,false},
+			{false,false,false,false},
+			{false,false,false,false},	
+	};
 	
 	public static HashMap<Integer,boolean[][]> shapeMap  = new HashMap<Integer,boolean[][]>();
 	static {
@@ -124,6 +182,15 @@ public class Constants {
 	   shapeMap.put(SHAPETYPE_TRIANGLE_1,TRIANGLE_1);
 	   shapeMap.put(SHAPETYPE_TRIANGLE_2,TRIANGLE_2);
 	   shapeMap.put(SHAPETYPE_TRIANGLE_3,TRIANGLE_3);
+	   shapeMap.put(SHAPETYPE_LEFT_L_0,LEFT_L_0);
+	   shapeMap.put(SHAPETYPE_LEFT_L_1,LEFT_L_1);
+	   shapeMap.put(SHAPETYPE_LEFT_L_2,LEFT_L_2);
+	   shapeMap.put(SHAPETYPE_LEFT_L_3,LEFT_L_3);
+	   
+	   shapeMap.put(SHAPETYPE_RIGHT_L_0,RIGHT_L_0);
+	   shapeMap.put(SHAPETYPE_RIGHT_L_1,RIGHT_L_1);
+	   shapeMap.put(SHAPETYPE_RIGHT_L_2,RIGHT_L_2);
+	   shapeMap.put(SHAPETYPE_RIGHT_L_3,RIGHT_L_3);	   
 	}
 	
 	public static boolean[][] getShape(int shapeType){
@@ -144,17 +211,27 @@ public class Constants {
 			
 			case SHAPETYPE_LEFT_PARALLELOGRAM_0: return SHAPETYPE_LEFT_PARALLELOGRAM_1;
 			case SHAPETYPE_LEFT_PARALLELOGRAM_1: return SHAPETYPE_LEFT_PARALLELOGRAM_0;
-			
+
 			case SHAPETYPE_TRIANGLE_0: return SHAPETYPE_TRIANGLE_1;
 			case SHAPETYPE_TRIANGLE_1: return SHAPETYPE_TRIANGLE_2;
 			case SHAPETYPE_TRIANGLE_2: return SHAPETYPE_TRIANGLE_3;
 			case SHAPETYPE_TRIANGLE_3: return SHAPETYPE_TRIANGLE_0;
+			
+			case SHAPETYPE_LEFT_L_0: return SHAPETYPE_LEFT_L_1;
+			case SHAPETYPE_LEFT_L_1: return SHAPETYPE_LEFT_L_2;
+			case SHAPETYPE_LEFT_L_2: return SHAPETYPE_LEFT_L_3;
+			case SHAPETYPE_LEFT_L_3: return SHAPETYPE_LEFT_L_0;
+			
+			case SHAPETYPE_RIGHT_L_0: return SHAPETYPE_RIGHT_L_1;
+			case SHAPETYPE_RIGHT_L_1: return SHAPETYPE_RIGHT_L_2;
+			case SHAPETYPE_RIGHT_L_2: return SHAPETYPE_RIGHT_L_3;
+			case SHAPETYPE_RIGHT_L_3: return SHAPETYPE_RIGHT_L_0;
 		
 		}
 		throw new RuntimeException("shapeType["+ shapeType + "] is invalid.");
 	}
 	public static int getRadomShapeType(){
-		return (int)(System.currentTimeMillis()%11);
+		return (int)(System.currentTimeMillis() % shapeMap.size());
 	}
 	
 	public static int getShapeLeftNotNullCol(int shapeType){

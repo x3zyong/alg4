@@ -2,12 +2,10 @@ package com.xzy;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.KeyEventPostProcessor;
-import java.awt.KeyboardFocusManager;
+
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -62,7 +60,7 @@ public class MainFrame {
 		panel.setLayout(new GridLayout(4, 1));
 		panel.add(new JLabel("score"));
 		panel.add(new JLabel("acture score"));
-		JLabel scoreLabel = new JLabel();
+		JLabel scoreLabel = new JLabel("0");
 		panel.add(scoreLabel);
 		TetrisManager.getInstance().setScoreLabel(scoreLabel);
 		JButton startButton = new JButton("start");

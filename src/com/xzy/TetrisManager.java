@@ -14,8 +14,10 @@ public class TetrisManager implements GameListener{
 	public static TetrisManager getInstance(){
 		if(tetrisManager == null){
 			tetrisComponent = new TetrisComponent();
-		    tetrisManager = new TetrisManager();
+			tetrisManager = new TetrisManager();
+			tetrisComponent.registerGameListener(tetrisManager);
 		}
+		
 		return tetrisManager;
 	}
 	private TetrisManager(){
@@ -36,7 +38,7 @@ public class TetrisManager implements GameListener{
 					while(isRunning){
 						Thread.sleep(400);
 						if(!tetrisComponent.doDown()){
-							tetrisComponent.nextShape();
+							if(!tetrisComponent.nextShape()) isRunning=false;
 						}
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
@@ -83,7 +85,7 @@ public class TetrisManager implements GameListener{
 	@Override
 	public void removeRowAction(int rowNum) {
 		// TODO Auto-generated method stub
-		int score = calcScore(rowNum);
+		score += calcScore(rowNum);
 		scoreLabel.setText(String.valueOf(score));
 	}
 

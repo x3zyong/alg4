@@ -14,22 +14,64 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("serial")
 public class TetrisComponent extends JComponent implements KeyEventPostProcessor {
 
-	boolean[][] data;
-	int currentShape;
+	boolean[][] data = new boolean[Constants.HIGTH][Constants.GAME_WIDTH];
+	int currentShape,oldShape;
 	int posx, posy;
-	ArrayList<GameListener> gameListeners;
+	ArrayList<GameListener> gameListeners = new ArrayList<GameListener>();
 	
 	public TetrisComponent() {
-
-		data = new boolean[Constants.HIGTH][Constants.GAME_WIDTH];
-		gameListeners = new ArrayList<GameListener>();
 		initData();
+		oldShape = Constants.SHAPETYPE_INVALID;
 		setBounds(new Rectangle(2, 2, Constants.GAME_WIDTH_PIX, Constants.HIGTH_PIX));
 
 		KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		kfm.addKeyEventPostProcessor(this);
 		
 	}
+	
+	public void initData() {
+		posx = 3;
+		posy = 0;
+		currentShape = Constants.getRadomShapeType();
+		oldShape = currentShape;
+		
+		for (int i = 0; i < Constants.HIGTH; i++)
+			for (int j = 0; j < Constants.GAME_WIDTH; j++) {
+				data[i][j] = false;
+			}
+	}
+	
+	private void refreshdata() {
+		boolean[][] shapedata = Constants.getShape(currentShape);
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++) {
+				if (shapedata[i][j]) {
+					if(posy + i<0) continue;
+					data[posy + i][posx + j] = shapedata[i][j];
+				}
+			}
+		
+		//remove full row
+		int rowCount =0;
+		for (int i = 0; i < Constants.HIGTH; i++){
+			boolean rowData = true;
+			for (int j = 0; j < Constants.GAME_WIDTH; j++) {
+				rowData = rowData && data[i][j] ;
+			}
+			if (rowData) {
+				for(int m=i;m>=0;m--)
+					for(int n=0;n< Constants.GAME_WIDTH; n++) {
+						if(m==0) 
+							data[m][n]=false;
+						else 
+						   data[m][n]=data[m-1][n];
+					}
+				rowCount++;
+			}
+		}
+		
+		if(rowCount>0) notifyGameListeners(rowCount);
+	}	
 
 	private void initUI(Graphics g) {
 		g.setColor(Color.BLACK);
@@ -57,60 +99,38 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 							Constants.UNIT_PIX,	Constants.UNIT_PIX);
 				}
 			}
+		
+		//draw oldshape
+		if(oldShape != Constants.SHAPETYPE_INVALID){
+			boolean[][] olddata = Constants.getShape(oldShape);
+			for(int i=0;i<4;i++)
+				for(int j=0;j<4;j++){
+					if(olddata[i][j]){
+					g.fillRect(initx + (j+posx) * Constants.UNIT_PIX, inity + (i+posy) * Constants.UNIT_PIX, 
+							Constants.UNIT_PIX,	Constants.UNIT_PIX);
+					}
+				}
+		}
+		
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		initUI(g);
 	}
-
-	public void initData() {
-		posx = 3;
-		posy = 0;
-		currentShape = Constants.getRadomShapeType();
-		for (int i = 0; i < Constants.HIGTH; i++)
-			for (int j = 0; j < Constants.GAME_WIDTH; j++) {
-				data[i][j] = false;
-			}
-		refreshdata();
-	}
 	
-	public void nextShape(){
+	public boolean nextShape(){
 		posx = 3;
-		posy = 0;
-		currentShape = Constants.getRadomShapeType();		
-	}
-
-	private void refreshdata() {
-		boolean[][] shapedata = Constants.getShape(currentShape);
-		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 4; j++) {
-				if (shapedata[i][j]) {
-					data[posy + i][posx + j] = shapedata[i][j];
-				}
-			}
+		posy = -3;
 		
-		//remove full row
-		int rowCount =0;
-		for (int i = 0; i < Constants.HIGTH; i++){
-			boolean rowData = true;
-			for (int j = 0; j < Constants.GAME_WIDTH; j++) {
-				rowData = rowData && data[i][j] ;
-			}
-			if (rowData) {
-				for(int m=i;m>=0;m--)
-					for(int n=0;n< Constants.GAME_WIDTH; n++) {
-						if(m==0) 
-							data[m][n]=false;
-						else 
-						   data[m][n]=data[m-1][n];
-					}
-				rowCount++;
-			}
+		currentShape = Constants.getRadomShapeType();	
+		boolean[][] currentshapedata = Constants.getShape(currentShape);
+		for(int j=0;j<4;j++){
+			if(currentshapedata[3][j] && data[posy+3][posx+j]) return false; 
 		}
 		
-		if(rowCount>0) notifyGameListeners(rowCount);
-		
+		oldShape = currentShape;
+		return true;
 	}
 
 	private boolean canTurn() {
@@ -122,9 +142,9 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 				if (currentshapedata[i][j])
 					continue;
 				if (posy + i > Constants.HIGTH - 1 || posy + i < 0)
-					continue;
+					return false;
 				if (posx + j > Constants.GAME_WIDTH - 1 || posx + j < 0)
-					continue;
+					return false;
 				if (turndata[i][j] && data[posy + i][posx + j])
 					return false;
 			}
@@ -136,10 +156,12 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 		boolean[][] shapedata = Constants.getShape(currentShape);
 		int currentShapeCol = Constants.getShapeLeftNotNullCol(currentShape);
 
-		for (int i = 0; i < 4; i++) {
-			if (posx + currentShapeCol - 1 < 0)
+		for(int j=currentShapeCol; j<4;j++)
+		for (int i = 0; i < 4; i++){
+			if (posx +j - 1 < 0)
 				return false;
-			if (shapedata[i][currentShapeCol] && data[posy + i][posx + currentShapeCol - 1])
+			if(posy +i < 0) continue;
+			if (shapedata[i][j] && data[posy + i][posx + j - 1])
 				return false;
 		}
 		return true;
@@ -148,11 +170,12 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 	private boolean canRight() {
 		boolean[][] shapedata = Constants.getShape(currentShape);
 		int currentShapeCol = Constants.getShapeRightNotNullCol(currentShape);
-
+        for(int j=currentShapeCol;j>=0;j--)
 		for (int i = 0; i < 4; i++) {
-			if (posx + currentShapeCol + 1 > Constants.GAME_WIDTH - 1)
+			if (posx + j + 1 > Constants.GAME_WIDTH - 1)
 				return false;
-			if (shapedata[i][currentShapeCol] && data[posy + i][posx + currentShapeCol + 1])
+			if(posy + i<0) continue;
+			if (shapedata[i][j] && data[posy + i][posx + j + 1])
 				return false;
 		}
 		return true;
@@ -161,56 +184,47 @@ public class TetrisComponent extends JComponent implements KeyEventPostProcessor
 	private boolean canDown() {
 		boolean[][] shapedata = Constants.getShape(currentShape);
 		int currentShapeRow = Constants.getShapeButtomNotNullCol(currentShape);
+		for(int i=currentShapeRow;i>=0;i--)
 		for (int j = 0; j < 4; j++) {
-			if (posy + currentShapeRow + 1 > Constants.HIGTH - 1)
+			if(posy + i +1 < 0) continue;
+			if (posy + i + 1 > Constants.HIGTH - 1)
 				return false;
-			if (shapedata[currentShapeRow][j] && data[posy + currentShapeRow + 1][posx + j])
+			if (shapedata[i][j] && data[posy + i + 1][posx + j])
 				return false;
 		}
 		return true;
 	}
 
-	private void clearcurrentShape() {
-		boolean[][] shapedata = Constants.getShape(currentShape);
-		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 4; j++) {
-				if (shapedata[i][j])
-					data[posy + i][posx + j] = false;
-			}
-	}
+
 
 	private void doTurn() {
 		if (canTurn()) {
-			clearcurrentShape();
 			currentShape = Constants.getTurn(currentShape);
-			refreshdata();
+			oldShape = currentShape;
 		}
 	}
 
 	private void doLeft() {
 		if (canLeft()) {
-			clearcurrentShape();
 			posx--;
-			refreshdata();
 		}
 	}
 
 	private void doRight() {
 		if (canRight()) {
-			clearcurrentShape();
 			posx++;
-			refreshdata();
 		}
 	}
 
 	public boolean doDown() {
 		if (canDown()) {
-			clearcurrentShape();
 			posy++;
-			refreshdata();
 			return true;
+		}else{
+			oldShape = Constants.SHAPETYPE_INVALID;
+			refreshdata();
+			return false;
 		}
-		return false;
 	}
 
 	@Override
