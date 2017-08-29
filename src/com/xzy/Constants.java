@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 public class Constants {
+	
+	public final static int SCORE_UNIT = 100;
 	public final static int UNIT_PIX=30;
 	
 	public final static int HELP_WIDTH=6;
@@ -20,7 +22,7 @@ public class Constants {
 	
 
 
-	//方块类型
+	//
 	public final static int SHAPETYPE_SQUARE_0 = 0;
 	public final static int SHAPETYPE_RECT_0 = 1;
 	public final static int SHAPETYPE_RECT_1 = 2;
@@ -33,7 +35,7 @@ public class Constants {
 	public final static int SHAPETYPE_TRIANGLE_2 = 9;
 	public final static int SHAPETYPE_TRIANGLE_3 = 10;
 
-    //方块定义
+    //
 	public final static boolean[][] SQUARE_0={
 			{false,false,false,false},
 			{false,true,true,false},
@@ -69,9 +71,9 @@ public class Constants {
 	};
 	
 	public final static boolean[][] LEFT_PARALLELOGRAM_0={
-			{false,false,false,false},
 			{true,true,false,false},
 			{false,true,true,false},
+			{false,false,false,false},
 			{false,false,false,false},			
 
 	};
@@ -163,11 +165,21 @@ public class Constants {
 		    }
 		throw new RuntimeException("shapeType["+shapeType+"] is invalid");
 	}
+	
 	public static int getShapeRightNotNullCol(int shapeType){
 		boolean[][] shapedata = getShape(shapeType);
 		for(int i=3;i>=0;i--)
 		    for(int j=0;j<4;j++){
 			    if(shapedata[j][i]) return i;
+		    }
+		throw new RuntimeException("shapeType["+shapeType+"] is invalid");
+	}
+	
+	public static int getShapeButtomNotNullCol(int shapeType){
+		boolean[][] shapedata = getShape(shapeType);
+		for(int i=3;i>=0;i--)
+		    for(int j=0;j<4;j++){
+			    if(shapedata[i][j]) return i;
 		    }
 		throw new RuntimeException("shapeType["+shapeType+"] is invalid");
 	}	

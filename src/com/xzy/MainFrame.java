@@ -2,9 +2,12 @@ package com.xzy;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.KeyEventPostProcessor;
+import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,23 +30,23 @@ public class MainFrame {
 		initMainFrame(mainFrame);
 		
 		JPanel helpPanel = new JPanel();
-		JPanel scopePanel = new JPanel();
+		JPanel scorePanel = new JPanel();
 		
-		TetrisComponent tetrisComponent = new TetrisComponent();
 		initHelpPanel(helpPanel);
-		initScopePanel(scopePanel, tetrisComponent);
+		TetrisComponent tetrisComponent = TetrisManager.getInstance().getTetrisComponent();
+		initScorePanel(scorePanel);
 		
 		mainFrame.getContentPane().add(helpPanel,BorderLayout.WEST);
 		mainFrame.getContentPane().add(tetrisComponent,BorderLayout.CENTER);
-		mainFrame.getContentPane().add(scopePanel,BorderLayout.EAST);
-
+		mainFrame.getContentPane().add(scorePanel,BorderLayout.EAST);
+		
 		mainFrame.setVisible(true);
 	}
 	
 	private static void initMainFrame(JFrame mainFrame){
 		
 		mainFrame.setTitle("Tetris");
-		mainFrame.setSize(Constants.MAIN_WIDTH_PIX+4,Constants.HIGTH_PIX+4);
+		mainFrame.setSize(Constants.MAIN_WIDTH_PIX+4,Constants.HIGTH_PIX+4+50);
 		mainFrame.setLocationRelativeTo(null);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -53,11 +56,15 @@ public class MainFrame {
 		panel.add(new JLabel("turn !"));
 	}
 
-	private static void initScopePanel(JPanel panel,TetrisComponent tetrisComponent){
-		panel.setBounds(new Rectangle((Constants.HELP_WIDTH_PIX + Constants.GAME_WIDTH_PIX) + 2,  2, Constants.SCOPE_WIDTH_PIX,Constants.HIGTH_PIX));
-		panel.setLayout(new GridLayout(3, 1));
-		panel.add(new JLabel("scope"));
-		panel.add(new JLabel("acture scope"));
+	private static void initScorePanel(JPanel panel){
+		panel.setBounds(new Rectangle((Constants.HELP_WIDTH_PIX + Constants.GAME_WIDTH_PIX) + 2,  
+				2, Constants.SCOPE_WIDTH_PIX,Constants.HIGTH_PIX));
+		panel.setLayout(new GridLayout(4, 1));
+		panel.add(new JLabel("score"));
+		panel.add(new JLabel("acture score"));
+		JLabel scoreLabel = new JLabel();
+		panel.add(scoreLabel);
+		TetrisManager.getInstance().setScoreLabel(scoreLabel);
 		JButton startButton = new JButton("start");
 		panel.add(startButton);
 		
@@ -66,10 +73,8 @@ public class MainFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				tetrisComponent.initData();
-				tetrisComponent.repaint();
-				
+				TetrisManager.getInstance().startGame();
+
 			}});
-		
 	}	
 }
